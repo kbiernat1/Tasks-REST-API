@@ -12,10 +12,8 @@ import org.springframework.web.client.RestTemplate;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import static java.util.Optional.ofNullable;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
