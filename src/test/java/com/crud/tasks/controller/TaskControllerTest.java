@@ -52,8 +52,11 @@ public class TaskControllerTest {
     @Test
     void shouldReturnTaskDtoList() throws Exception {
         //given
-        List<TaskDto> tasks = Arrays.asList(new TaskDto(1L, "test_task_1", "test_content_1"), new TaskDto(2L, "test_task_2", "test_content_2"));
-        when(taskMapper.mapToTaskDtoList(new ArrayList<>())).thenReturn(tasks);
+        List<Task> tasks = Arrays.asList(new Task(1L, "test_task_1", "test_content_1"), new Task(2L, "test_task_2", "test_content_2"));
+        List<TaskDto> tasksDto = Arrays.asList(new TaskDto(1L, "test_task_1", "test_content_1"), new TaskDto(2L, "test_task_2", "test_content_2"));
+
+        when(dbService.getAllTasks()).thenReturn(tasks);
+        when(taskMapper.mapToTaskDtoList(ArgumentMatchers.anyList())).thenReturn(tasksDto);
 
         //when/then
         mockMvc
@@ -67,7 +70,7 @@ public class TaskControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].content", Matchers.is("test_content_1")));
     }
 
-    @Test //ERROR
+    @Test
     void shouldReturnIndicatedTask() throws Exception {
         //given
         Task task = new Task(1L, "test_task_1", "test_content_1");
