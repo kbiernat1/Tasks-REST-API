@@ -1,12 +1,10 @@
 package com.crud.tasks.trello.facade;
 
-import com.crud.tasks.domain.TrelloBoard;
-import com.crud.tasks.domain.TrelloBoardDto;
-import com.crud.tasks.domain.TrelloList;
-import com.crud.tasks.domain.TrelloListDto;
+import com.crud.tasks.domain.*;
 import com.crud.tasks.mapper.TrelloMapper;
 import com.crud.tasks.service.TrelloService;
 import com.crud.tasks.trello.validator.TrelloValidator;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,8 +14,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class TrelloFacadeTest {
@@ -100,5 +99,30 @@ class TrelloFacadeTest {
                 assertThat(trelloListDto.isClosed()).isFalse();
             });
         });
+    }
+
+    @Test
+    public void shouldCreateCreatedTrelloCardDto() {
+        //Given
+        TrelloBadgeDto trelloBadgesDto = new TrelloBadgeDto(3, new TrelloAttachmentsByTypeDto(new TrelloTrelloDto(2,3)));
+        CreatedTrelloCardDto createdCard = new CreatedTrelloCardDto("1", "card", trelloBadgesDto, "com/org");
+
+        TrelloCardDto trelloCardDto = new TrelloCardDto("card", "desc", "pos", "1");
+        TrelloCard trelloCard = new TrelloCard("card", "desc", "pos", "1");
+
+        when(trelloMapper.mapToCard(trelloCardDto)).thenReturn(trelloCard);
+        when(trelloMapper.mapToCardDto(trelloCard)).thenReturn(trelloCardDto);
+        when(trelloService.createTrelloCard(trelloCardDto)).thenReturn(createdCard);
+
+        //When
+        CreatedTrelloCardDto createdTrelloCardDto = trelloFacade.createCard(trelloCardDto);
+
+        //Then
+        assertEquals("1",createdTrelloCardDto.getId());
+        assertEquals("card",createdTrelloCardDto.getName());
+        assertEquals("com/org",createdTrelloCardDto.getShortUrl());
+        assertEquals(3,createdTrelloCardDto.getBadges().getVotes());
+        assertEquals(2,createdTrelloCardDto.getBadges().getAttachmentsByType().getTrello().getBoard());
+        assertEquals(3,createdTrelloCardDto.getBadges().getAttachmentsByType().getTrello().getCard());
     }
 }
