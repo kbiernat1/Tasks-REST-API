@@ -18,6 +18,7 @@ public class MailCreatorService {
 
     public String buildTrelloCardEmail(String message) {
         Context context = new Context();
+        context.setVariable("preview", "Trello - new card has been created.");
         context.setVariable("message", message);
         context.setVariable("tasks_url", "https://kbiernat1.github.io/");
         context.setVariable("button", "Visit website");
