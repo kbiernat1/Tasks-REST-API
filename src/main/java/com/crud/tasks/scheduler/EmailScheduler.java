@@ -2,6 +2,7 @@ package com.crud.tasks.scheduler;
 
 import com.crud.tasks.domain.Mail;
 import com.crud.tasks.repository.TaskRepository;
+import com.crud.tasks.service.EmailType;
 import com.crud.tasks.service.SimpleEmailService;
 import com.crud.tasks.trello.config.AdminConfig;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,7 @@ public class EmailScheduler {
     private final AdminConfig adminConfig;
     private static final String SUBJECT = "Tasks: Once a day email";
 
-    @Scheduled(cron = "0 0 10 * * *")
+    @Scheduled(cron = "0 0/27 13 * * *")
     //Scheduled(fixedDelay = 20000)
     public void sendInformationEmail() {
         long size = taskRepository.count();
@@ -28,7 +29,7 @@ public class EmailScheduler {
                         SUBJECT,
                         "Currently in database you got: " + size + condition,
                         null
-                )
+                ), EmailType.ONCE_A_DAY
         );
     }
 }

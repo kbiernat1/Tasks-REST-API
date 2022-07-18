@@ -39,7 +39,7 @@ class SimpleEmailServiceTest {
         mailMessage.setCc(mail.getToCc());
 
         //When
-        simpleEmailService.send(mail);
+        simpleEmailService.send(mail, EmailType.CREATED_CARD);
 
         //Then
         verify(javaMailSender, times(1)).send(mailMessage);

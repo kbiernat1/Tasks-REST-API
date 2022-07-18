@@ -23,30 +23,39 @@ public class SimpleEmailService {
     private MailCreatorService mailCreatorService;
     private final JavaMailSender javaMailSender;
 
-    public void send(final Mail mail) {
+    public void send(final Mail mail, final EmailType emailType) {
         log.info("Starting email preparation...");
         try {
-            javaMailSender.send(createMimeMessage(mail));
+            javaMailSender.send(createMimeMessage(mail, emailType));
             log.info("Email has been sent.");
         } catch (MailException e) {
             log.error("Failed to process email sending: " + e.getMessage(), e);
         }
     }
 
-    private MimeMessagePreparator createMimeMessage(final Mail mail) {
+    private MimeMessagePreparator createMimeMessage(final Mail mail, final EmailType emailType) {
         return mimeMessage -> {
             MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage);
             messageHelper.setTo(mail.getMailTo());
             messageHelper.setSubject(mail.getSubject());
-            messageHelper.setText(mailCreatorService.buildTrelloCardEmail(mail.getMessage()), true);
+            messageHelper.setText(selectMessageAccordingToEmailType(mail.getMessage(), emailType), true);
         };
     }
 
-    private SimpleMailMessage createMailMessage(final Mail mail) {
+    private String selectMessageAccordingToEmailType(final String message, final EmailType emailType) {
+        if (emailType == EmailType.CREATED_CARD) {
+            return mailCreatorService.buildTrelloCardEmail(message);
+        } else if (emailType == EmailType.ONCE_A_DAY) {
+            return mailCreatorService.buildScheduledEmail(message);
+        }
+        return "";
+    }
+
+    /*private SimpleMailMessage createMailMessage(final Mail mail) {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(mail.getMailTo());
         mailMessage.setSubject(mail.getSubject());
         mailMessage.setText(mailCreatorService.buildTrelloCardEmail(mail.getMessage()));
         return mailMessage;
-    }
+    }*/
 }
